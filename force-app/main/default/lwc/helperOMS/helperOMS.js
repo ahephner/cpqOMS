@@ -1,7 +1,11 @@
   //loading for the desktop version. accepts product list and assigns values
   //if you want to add another field to the screen start it here
-  const onLoadProducts = (products, recordId) =>{
+
+  //oms need to pass the pricing array then in margin or whatever inof you need to pricingArray.find(prod => prod.productId === x.product2Id).fieldYouNeed
+  const onLoadProductsOMS = (products, upPrices, recordId) =>{
     let count = 0;
+    let prices = upPrices
+    console.log('helper pricing ==> ', prices)
     let prod = products.map(x =>{
       count++   
         //console.log(JSON.stringify(products));
@@ -14,8 +18,9 @@
             ProductCode: x.Product2.ProductCode,
             Quantity: x.Quantity,
             lOne: x.Level_1_UserView__c,
-            floorPrice: x.Floor_Price__c,
-            UnitPrice:x.Product2.Agency_Pricing__c ? x.Floor_Price__c: x.CPQ_Unit_Price__c,
+            floorPrice: prices.find(a=> a.Product2Id === x.Product2Id).Floor_Price__c,
+            //UnitPrice:x.Product2.Agency_Pricing__c ? x.Floor_Price__c: x.CPQ_Unit_Price__c,
+            UnitPrice: prices.find(a=> a.Product2Id === x.Product2Id).UnitPrice,
             //MinPrice: x.UnitPrice, 
             CPQ_Margin__c: x.Product2.Agency_Pricing__c? '' : x.CPQ_Margin__c,
             Cost__c: x.Product_Cost__c,
@@ -35,7 +40,7 @@
             lastQuoteAmount: x.Last_Quote_Price__c,
             lastQuoteMargin: x.Last_Quote_Margin__c,
             lastQuoteDate: x.Quote_Date__c,
-            flrText: 'flr price $'+ x.Floor_Price__c,
+            flrText: 'flr price $'+ prices.find(a=> a.Product2Id === x.Product2Id).Floor_Price__c,
             lOneText: 'lev 1 $'+x.Level_1_UserView__c,
             sgn: x.Product2.SGN__c,
             goodPrice:x.Product2.Agency_Pricing__c ?true: (x.Floor_Price__c <= x.CPQ_Unit_Price__c ? true: false),
@@ -70,7 +75,7 @@
 
 // make it so functions can be used other pages
 export{ 
-        onLoadProducts, 
+        onLoadProductsOMS, 
         sortArray
 
       }

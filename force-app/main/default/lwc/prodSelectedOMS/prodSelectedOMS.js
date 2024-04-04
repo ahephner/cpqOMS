@@ -2,7 +2,8 @@
 //has to be a way to call apex on the new products selected here
 import { LightningElement, api, wire, track } from 'lwc';
 import getDetailsPricing from '@salesforce/apex/omsCPQAPEX.getDetailsPricing';
-import getProducts from '@salesforce/apex/cpqApex.getProducts';
+//import getProducts from '@salesforce/apex/cpqApex.getProducts';
+import getProducts from '@salesforce/apex/omsCPQAPEX.getProducts';
 //get price books the account has access too. 
 import getPriceBooks from '@salesforce/apex/getPriceBooks.getPriceBookIds';
 import onLoadGetInventory from '@salesforce/apex/cpqApex.onLoadGetInventory';
@@ -1050,8 +1051,10 @@ priceCheck(){
         let inCode = new Set();
         let codes = [];
         try{
-            let results = await getProducts({oppId: this.recordId})
-            
+            let infoBack = await getProducts({oppId: this.recordId}) 
+            let results = infoBack.itemsOnOrder; 
+            let pricingInfo = infoBack.pricingInfo;
+
             if(results.length === 0){                
                 return; 
             }else if(results){
@@ -1088,7 +1091,7 @@ priceCheck(){
             
             
             //IF THERE IS A PROBLEM NEED TO HANDLE THAT STILL!!!
-            this.selection = await onLoadProducts(mergedLevels, this.recordId); 
+            this.selection = await onLoadProductsOMS(mergedLevels, pricingInfo, this.recordId); 
             
             //get for ordering
             this.lineOrderNumber = isNaN((this.selection.at(-1).Line_Order__c + 1)) ? (this.selection.length + 1) : (this.selection.at(-1).Line_Order__c + 1);
